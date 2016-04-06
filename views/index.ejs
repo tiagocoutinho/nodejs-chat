@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Playing with Bootstrap</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  
+  </head>
+  <body>
+    <div class="jumbotron">
+      <h1>ESRF Chat</h1>
+      <p>Welcome to the ESRF chat room</p>
+    </div>
+    
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+      nav bar
+      </div>
+    </nav>
+    
+    <div class="container">
+      <div class="row">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            nick:<input type="text" placeholder="Enter your nickname" id="nickname"></input>
+          </div>
+          <div class="panel-body" id="chatbox">waiting for chat to connect...</div>
+        </div>
+      
+        <input id="messagebox" type="text" />
+        <div class="btn-group btn-group-sm" role="group">
+          <button class="btn btn-primary glyphicon glyphicon-send" id="sendmessage">
+            Send
+          </button>
+        </div>
+      </div>
+      
+    </div> <!-- container -->
+
+  </body>
+  <script>
+    /*
+    if (typeof $ === "undefined")
+    {
+      window.content.href = '/notConnected';
+      return;
+    }
+    */
+    $('#hamburger').on('click', function() {
+      $('#nav_menu').toggle();
+    });
+    
+    $('#sendmessage').on('click', function() {
+      var mb = $('#messagebox');
+      var message = mb.val();
+      var nickname = $('#nickname').val();
+      if(!message) {
+        return;
+      }
+      $.post('/chat', { message: message, nickname: nickname });
+      mb.val('');
+    });
+    
+    setInterval( function() {
+      $.get('/chat', function(data) {
+        if(data && data.length) {
+          var content = [];
+          for(var i = 0; i<data.length; i++) {
+            var item = data[i];
+            if(item.message && item.nickname) {
+              content.push(item.nickname + '> ' + item.message);
+            }
+          }
+          $('#chatbox').html(content.join('<br />'));
+        }
+      });
+    }, 2000);
+  </script>
+</html>
